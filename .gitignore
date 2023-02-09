@@ -1,129 +1,78 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+import random as rd
 
-# C extensions
-*.so
+welcome_phrase = 'Это игра в "Угадай Число"\nВведите число больше 1 до которого мне загадать.\n'
+over_number_phrase = 'Ваше число больше загаданного, попробуйте еще разок\n'
+below_number_phrase = 'Ваше число меньше загаданного, попробуйте еще разок\n'
+end_game_phrase = 'Спасибо, что играли в числовую угадайку. Еще увидимся...'
+invalid_predict_input_phrase = 'А может быть все-таки введем целое число от 1 до {}, у вас осталось {} попыток?\n'
+invalid_input_phrase = 'Нужно ввести число больше 1, у вас осталось {} попыток.\n'
+win_game_phrase = 'Вы угадали с {} попытки, поздравляем!\nХотите сыграть еще раз ?\n'
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+try_input = 0
+try_predict = 0
+valid_maximal_number = 0
+random_number = 0
+valid_predict_number = 0
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+def start_game():
+    print(welcome_phrase)
+    try_input = 0
+    while try_input < 4:
+        maximal_number = input('Нужно ввести число больше 1\n')
+        if is_valid(maximal_number):
+            return int(maximal_number)
+        else:
+            print(invalid_input_phrase.format(3 - try_input))
+            try_input += 1
+        if try_input == 4:
+            print(end_game_phrase)
+            exit()
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
 
-# Translations
-*.mo
-*.pot
+def randomer(max_number):
+    return rd.randint(1, max_number)
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
 
-# Flask stuff:
-instance/
-.webassets-cache
+def is_valid(user_input):
+    return user_input.isdigit() and int(user_input) >= 1
 
-# Scrapy stuff:
-.scrapy
 
-# Sphinx documentation
-docs/_build/
+def valid_number(valid_maximal_number):
+    try_input = 0
+    while try_input < 4:
+        number = input('введите цифру от 1 до {}\n'.format(valid_maximal_number))
+        if is_valid(number) and 1 <= int(number) <= valid_maximal_number:
+            return int(number)
+        else:
+            print(invalid_predict_input_phrase.format(valid_maximal_number, 3 - try_input))
+            try_input += 1
+    if try_input == 4:
+        print(end_game_phrase)
+        exit()
 
-# PyBuilder
-target/
 
-# Jupyter Notebook
-.ipynb_checkpoints
+def game():
+    valid_maximal_number = start_game()
+    random_number = randomer(valid_maximal_number)
+    valid_predict_number = valid_number(valid_maximal_number)
+    try_predict = 1
+    while random_number != valid_predict_number:
+        if valid_predict_number > random_number:
+            print(over_number_phrase)
+            valid_predict_number = valid_number(valid_maximal_number)
+            try_predict += 1
+        if valid_predict_number < random_number:
+            print(below_number_phrase)
+            valid_predict_number = valid_number(valid_maximal_number)
+            try_predict += 1
+        if valid_predict_number == random_number:
+            print(win_game_phrase.format(try_predict))
+            if input('Введите д если хотите сыграть еще раз\n') == 'д':
+                game()
+            else:
+                print(end_game_phrase)
+                exit()
 
-# IPython
-profile_default/
-ipython_config.py
 
-# pyenv
-.python-version
-
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
+game()
